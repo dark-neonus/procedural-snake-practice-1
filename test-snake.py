@@ -36,15 +36,15 @@ glHint(GL_LINE_SMOOTH_HINT, GL_NICEST)
 # Snake parameters
 
 
-HD_ENABLE =  0
+HD_ENABLE =  1
 COBRA_DEFORM = 0
 
 if HD_ENABLE:
     # HD Snake
-    segments = [ProceduralSegment(calculation_radius=50, radius=int(r/2)) for r in range(40*2, 5*2, -1)]
+    segments = [ProceduralSegment(calculation_radius=r // 3, radius=int(r/2)) for r in range(40*2, 5*2, -1)]
 else:
     # Normal Snake
-    segments = [ProceduralSegment(calculation_radius=r, radius=r) for r in range(65, 5, -4)]
+    segments = [ProceduralSegment(calculation_radius=r, radius=r) for r in range(60, 5, -3)]
 if COBRA_DEFORM:
 
     deform_n = int(len(segments) / 5)

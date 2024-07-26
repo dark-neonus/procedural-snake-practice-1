@@ -1,10 +1,10 @@
 import pyglet
 from pyglet.gl import *
-from typing import List
+from typing import List, Tuple
 from pyglet.math import Vec2
 from my_shader import *
 import math
-import triangulator.ear_clipping_method
+import random
 
 
 class Color:
@@ -178,12 +178,10 @@ class ProceduralLimb:
 
         self.border_vertices = []
 
-        # self.triangles = []
-
         self._colors_fill = []
         self._colors_border = []
         
-        # self.vlist_fill_list: List[pyglet.graphics.VertexList] = []
+        self.vlist_fill_list: List[pyglet.graphics.VertexList] = []
         self.vlist_border = None
 
         self.update_vertices()
@@ -202,7 +200,6 @@ class ProceduralLimb:
 
     def update_vertices(self):
         
-        # self._vertices = [self.segments[0].front().x, self.segments[0].front().y]
 
         _right = [self.segments[0].front().x, self.segments[0].front().y]
         _left = [self.segments[0].front().y, self.segments[0].front().x]
@@ -217,49 +214,59 @@ class ProceduralLimb:
             _left.append(segm.left.x)
             _left.append(segm.left.y)
             _left.append(segm.left.x)
-            # self._vertices.extend([segm.front().x, segm.front().y])
+
+        _right.extend([self.segments[-1].back().x, self.segments[-1].back().y])
+        _left.extend([self.segments[-1].back().y, self.segments[-1].back().x])
+
+
+        self.fill_vertices = []
+
+        for i in range(0, len(_right), 2):
+            self.fill_vertices.extend([
+                _right[i], _right[i + 1],
+                _right[(i + 2) % len(_right)], _right[(i + 3) % len(_right)],
+                _left[i + 1], _left[i]
+            ])
+
+            self.fill_vertices.extend([
+                _left[i + 1], _left[i],
+                _left[(i + 3) % len(_left)], _left[(i + 2) % len(_left)],
+                _right[(i + 2) % len(_right)], _right[(i + 3) % len(_right)]
+            ])
+
 
         _left.reverse()
-
-        # _left.extend([self.segments[0].front().x, self.segments[0].front().y])
-        
-        # self.triangles = triangulator.ear_clipping_method.triangulate(_right + _left)
         self.border_vertices = _right + _left
 
-        # for triangle in self.triangles:
-        #     for i in range(3):
-        #         self._vertices.append(triangle[i][0])
-        #         self._vertices.append(triangle[i][1])
-        
+        # >>> Create colors for snake
+        self._colors_fill = self.fill_color * (len(self.fill_vertices) // 2)
+        self._colors_border = self.border_color * (len(self.border_vertices) // 2)
 
-        # self._colors_fill = []
-        self._colors_border = []
 
-        for i in range(int(len(self.border_vertices) / 2)):
-            for i in range(4):
-                # self._colors_fill.append(self.fill_color[i])
-                self._colors_border.append(self.border_color[i])
-            
-        
-
-        # if len(self.vlist_fill_list) > 0:
-        #     for vlist in self.vlist_fill_list:
-        #         vlist.delete()
-        #     self.vlist_fill_list.clear()
+        # >>> Delete the old vertex lists
+        if self.vlist_fill_list:
+            for vlist in self.vlist_fill_list:
+                vlist.delete()
+            self.vlist_fill_list.clear()
 
         if self.vlist_border is not None:
             self.vlist_border.delete()
 
-        # for i in range(len(self.triangles)):
-        #     self.vlist_fill_list.append(
-        #         program.vertex_list(3, pyglet.gl.GL_TRIANGLE_FAN,
-        #         position=('f', self._vertices[i*6:(i+1)*6]),
-        #         colors=('Bn', self._colors_fill[i*12:(i+1)*12],),
-        #         batch=self.batch)
-        #         )
-        
         self.vlist_border = program.vertex_list(int(len(self.border_vertices) / 2), pyglet.gl.GL_LINES,
                                             position=('f', self.border_vertices),
                                             colors=('Bn', self._colors_border,),
                                             batch=self.batch)
+        
+        # >>> Create new vertex lists
+        for i in range(0, len(self.fill_vertices), 6):
+            self.vlist_fill_list.append(
+                program.vertex_list(
+                    count=3,
+                    mode=pyglet.gl.GL_TRIANGLES,
+                    position=('f', self.fill_vertices[i:i+6]),
+                    colors=('Bn', self._colors_fill[i*2:(i+6)*2],),
+                    batch=self.batch)
+                )
+        
+        
 
