@@ -53,3 +53,20 @@ def move_on_itself(snake, head, dt, **kwargs):
 
 BEH_MOVE_ON_ITSELF = 1
 behaviours[BEH_MOVE_ON_ITSELF] = SnakeBehavior(move_on_itself)
+
+
+
+def set_pos(snake, head, dt, **kwargs):
+    """
+    kwargs: 
+        - pos: Vec2
+    """
+    diff = kwargs["pos"] - head.pos()
+    
+    if diff != Vec2(0, 0):
+        head.set_pos(kwargs["pos"])
+        head.direction = diff
+
+BEH_SET_POS = 2
+behaviours[BEH_SET_POS] = SnakeBehavior(set_pos)
+
