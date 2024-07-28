@@ -1,17 +1,38 @@
-from procedural_math import *
 import random
 
-class SnakeBehavior:
-    def __init__(self, process_function):
-        self.process_function = process_function
+from pyglet.math import Vec2
+from typing import Dict, Callable
+import math
 
-    def process(self, snake, dt, **kwargs):
+from lib.procedural_objects.circle import ProceduralCircle
+
+
+class ProceduralSnake:
+    pass
+
+class SnakeBehavior:
+    def __init__(self, process_function: Callable[[ProceduralSnake, ProceduralCircle, float], None]) -> None:
+        self.process_function: Callable[['ProceduralSnake', ProceduralCircle, float], None] = process_function
+
+    def process(self, snake: ProceduralSnake, dt: float, **kwargs):
 
         self.process_function(snake, snake.head(), dt, **kwargs)
 
-behaviours = {}
+behaviours: Dict[int, SnakeBehavior] = {}
 
-def follow_mouse(snake, head, dt, **kwargs):
+def do_nothing(snake: ProceduralSnake, head: ProceduralCircle, dt: float, **kwargs):
+    """
+    Do nothing ro snake
+    """
+
+    pass
+
+BEH_DO_NOTHING = 0
+behaviours[BEH_DO_NOTHING] = SnakeBehavior(do_nothing)
+
+
+
+def follow_mouse(snake: ProceduralSnake, head: ProceduralCircle, dt: float, **kwargs):
     """
     kwargs: 
         - mouse_pos: Vec2
@@ -22,14 +43,14 @@ def follow_mouse(snake, head, dt, **kwargs):
         head.set_pos(head.pos().lerp(kwargs["mouse_pos"], 0.3))
         head.direction = diff
 
-BEH_FOLLOW_MOUSE = 0
+BEH_FOLLOW_MOUSE = 1
 behaviours[BEH_FOLLOW_MOUSE] = SnakeBehavior(follow_mouse)
 
 
 
 delta_angle = 0
 angle_time = 0
-def move_on_itself(snake, head, dt, **kwargs):
+def move_on_itself(snake: ProceduralSnake, head: ProceduralCircle, dt: float, **kwargs):
     """
     kwargs: 
         - screen_center: Vec2
@@ -51,7 +72,7 @@ def move_on_itself(snake, head, dt, **kwargs):
 
     head.set_pos(head.pos() + head.direction * 15)
 
-BEH_MOVE_ON_ITSELF = 1
+BEH_MOVE_ON_ITSELF = 2
 behaviours[BEH_MOVE_ON_ITSELF] = SnakeBehavior(move_on_itself)
 
 
@@ -67,6 +88,6 @@ def set_pos(snake, head, dt, **kwargs):
         head.set_pos(kwargs["pos"])
         head.direction = diff
 
-BEH_SET_POS = 2
+BEH_SET_POS = 3
 behaviours[BEH_SET_POS] = SnakeBehavior(set_pos)
 

@@ -1,9 +1,11 @@
 import pyglet
-import random
 
-from procedural_math import *
+from pyglet.math import Vec2
+from pyglet.gl import *
 
-from snake_behavior import *
+from lib.snake_behavior import *
+from lib.procedural_objects.snake import ProceduralSnake
+from lib.procedural_objects.circle import ProceduralCircle
 
 # ________________________________________________________________________________________________
 
@@ -41,10 +43,10 @@ COBRA_DEFORM = 0
 
 if HD_ENABLE:
     # HD Snake
-    segments = [ProceduralSegment(calculation_radius=r // 3, radius=int(r/2)) for r in range(40*2, 5*2, -1)]
+    segments = [ProceduralCircle(calculation_radius=r // 3, radius=int(r/2)) for r in range(40*2, 5*2, -1)]
 else:
     # Normal Snake
-    segments = [ProceduralSegment(calculation_radius=r, radius=r) for r in range(60, 5, -3)]
+    segments = [ProceduralCircle(calculation_radius=r, radius=r) for r in range(60, 5, -3)]
 if COBRA_DEFORM:
 
     deform_n = int(len(segments) / 5)
@@ -54,18 +56,18 @@ if COBRA_DEFORM:
     for i in range(len(size_deltas)):
         segments[i + 1].radius += size_deltas[i] * int(60 / deform_n)
 
-snake = ProceduralLimb(
+snake = ProceduralSnake(
     segments=segments,
     batch=main_batch,
     debug_draw=False
 )
-snake1 = ProceduralLimb(
-    segments=[ProceduralSegment(calculation_radius=r, radius=r) for r in range(30, 5, -2)],
+snake1 = ProceduralSnake(
+    segments=[ProceduralCircle(calculation_radius=r, radius=r) for r in range(30, 5, -2)],
     batch=main_batch,
     debug_draw=False
 )
-snake2 = ProceduralLimb(
-    segments=[ProceduralSegment(calculation_radius=r, radius=r) for r in range(30, 5, -2)],
+snake2 = ProceduralSnake(
+    segments=[ProceduralCircle(calculation_radius=r, radius=r) for r in range(30, 5, -2)],
     batch=main_batch,
     debug_draw=False
 )

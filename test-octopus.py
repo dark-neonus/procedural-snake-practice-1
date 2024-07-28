@@ -1,9 +1,16 @@
 import pyglet
-import random
+from pyglet.math import Vec2
+from lib.blueprint.octopus import *
 
-from procedural_math import *
+from pyglet.math import Vec2
+from pyglet.gl import *
 
-from snake_behavior import *
+from lib.snake_behavior import *
+from lib.procedural_objects.snake import ProceduralSnake
+from lib.procedural_objects.circle import ProceduralCircle
+from lib.procedural_objects.octopus import Octopus
+from lib.blueprint.octopus import OctopusBlueprint
+from lib.graphic.color import Color
 
 # ________________________________________________________________________________________________
 
@@ -33,52 +40,38 @@ glHint(GL_LINE_SMOOTH_HINT, GL_NICEST)
 
 # ________________________________________________________________________________________________
 
-# Snake parameters
+# Octopus parameters
 
-head = ProceduralLimb(
-        segments=[ProceduralSegment(100),]
+"""
+# Test octopus blueprint generation
+
+blueprint = OctopusBlueprint(
+    head_sizes=[150, 140, 130],
+    tentacle_lengths=[10, 12, 15, 12, 10],
+    tentacle_angles=[-90, -50, 0, 50, 90],
+    tentacle_start_size=32,
+    tentacle_size_reduction=2,
+    fill_color=Color.get_transparent_color(Color.magenta, 100)
+)
+
+blueprint.save(os.path.join("blueprints", "octopuses", "test-octopus.json"))
+
+# End test octopus blueprint
+"""
+
+blueprint = OctopusBlueprint()
+blueprint.load(os.path.join("blueprints", "octopuses", "regular-octopus.json"))
+
+octopus: Octopus = blueprint.create_octopus(
+    batch=main_batch,
+    debug_draw=False,
+    behavior=BEH_FOLLOW_MOUSE,
+    additional_tentacle_calculation_radius=30
     )
 
-tentacle_start_size = 50
-tentacle_reduce = 5
-tentacle_lengths = [5, 7, 10, 7, 5]
-tentacle_angles = [-50, -30, 0, 30, 50]
-tentacle_count = len(tentacle_lengths)
 
-tentacles = {}
-for i in range(tentacle_count):
-    segments = [ProceduralSegment(calculation_radius=(tentacle_start_size - tentacle_reduce * j)) for j in range(tentacle_lengths[i])]
-
-    tentacles[tentacle_lengths] = ProceduralLimb(
-                                    segments=segments,
-                                    batch=main_batch,
-                                    debug_draw=False
-                                )
     
-
-
-snake = ProceduralLimb(
-    segments=segments,
-    batch=main_batch,
-    debug_draw=False
-)
-snake1 = ProceduralLimb(
-    segments=[ProceduralSegment(calculation_radius=r, radius=r) for r in range(30, 5, -2)],
-    batch=main_batch,
-    debug_draw=False
-)
-snake2 = ProceduralLimb(
-    segments=[ProceduralSegment(calculation_radius=r, radius=r) for r in range(30, 5, -2)],
-    batch=main_batch,
-    debug_draw=False
-)
-snake.head().set_pos(screen_center)
-snake1.head().set_pos(screen_center)
-snake2.head().set_pos(screen_center)
-
-# Snake parameters end
-
-# ________________________________________________________________________________________________
+#  ________________________________________________________________________________________________
 
 # Events and functions
 
@@ -95,17 +88,41 @@ def on_draw():
 
 
 
+octopus.head.head().set_pos(screen_center)
+
+octopus_fill_color = octopus.head.fill_color
+
+tmp_head_pos = octopus.head.head().pos()
+delta_vector = Vec2(0, 0)
+
+color_change: float = 0.0
+delta_change: float = 0.0
+
 def update(dt):
-    behaviours[BEH_FOLLOW_MOUSE].process(head, dt, screen_center=screen_center, mouse_pos=mouse_pos)
+    global delta_vector, tmp_head_pos, delta_change, color_change
 
+    delta_vector = tmp_head_pos - octopus.head.head().pos()
+    tmp_head_pos = octopus.head.head().pos()
 
-    
-    for angle, limb in tentacles.items():
-        pass
-    
-    head.update(dt)
-    snake1.update(dt)
-    snake2.update(dt)
+    if delta_vector.mag < 15.0:
+        delta_change = max(-10.0, min(0.0, delta_change - 0.1))
+    else:
+        delta_change = min(5.0, max(0.0, int(delta_vector.mag) / 20))
+
+    color_change = max(0.0, min(100.0, color_change + delta_change))
+
+    new_color = (
+        50 + int(color_change),
+        150 - int(color_change * 1.5),
+        150 - int(color_change),
+        80
+    )
+
+    octopus.set_fill_color(new_color)
+    octopus.set_border_colro(new_color)
+
+    octopus.update(dt, screen_center=screen_center, mouse_pos=mouse_pos)
+      
 
 
 
