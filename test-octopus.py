@@ -60,6 +60,7 @@ blueprint.save(os.path.join("blueprints", "octopuses", "test-octopus.json"))
 """
 
 PROCEDURAL_RESIZING = 1
+RADICAL_MOVEMENT = 0
 
 blueprint = OctopusBlueprint()
 
@@ -67,6 +68,9 @@ if PROCEDURAL_RESIZING:
     blueprint.load(os.path.join("blueprints", "octopuses", "regular-octopus-resizable.json"))
 else:
     blueprint.load(os.path.join("blueprints", "octopuses", "regular-octopus.json"))
+
+if RADICAL_MOVEMENT:
+    blueprint.head_sizes[-1] *= 2.5
 
 octopus: Octopus = blueprint.create_octopus(
     batch=main_batch,
@@ -140,7 +144,7 @@ def update(dt):
             octopus.head.segments[i].radius = segment_original_radiuses[i] * (1.0 - deform_koef * 0.1)
             octopus.head.segments[i].calculation_radius = segment_oriiginal_calculation_radiuses[i] * (1.0 + deform_koef * 0.4)
 
-        octopus.head.segments[-1].radius = segment_original_radiuses[-1] * (1.0 - deform_koef * 0.4)
+        octopus.head.segments[-1].radius = segment_original_radiuses[-1] * (1.0 - deform_koef * (0.9 if RADICAL_MOVEMENT else 0.4))
 
 
     octopus.update(dt, screen_center=screen_center, mouse_pos=mouse_pos)
