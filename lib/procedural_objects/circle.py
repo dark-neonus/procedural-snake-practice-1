@@ -9,8 +9,8 @@ from lib.graphic.color import *
 from lib.graphic.shapes import *
 
 class ProceduralCircle(BorderCircle):
-    def __init__(self, calculation_radius, x=0, y=0, border_width=5, color=Color.grey, batch=None, radius=None, debug_draw=False, max_angle: float=math.pi / 7) -> None:
-        self.calculation_radius = calculation_radius
+    def __init__(self, calculation_radius: float, x=0, y=0, border_width=5, color=Color.grey, batch=None, radius=None, debug_draw=False, max_angle: float=math.pi / 7) -> None:
+        self.calculation_radius: float = calculation_radius
 
         if radius == None:
             radius = self.calculation_radius

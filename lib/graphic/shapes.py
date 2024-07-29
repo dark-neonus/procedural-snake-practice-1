@@ -6,7 +6,7 @@ from lib.graphic.my_shaders import *
 from lib.graphic.color import Color
 
 class BorderCircle(pyglet.shapes.Arc):
-    def __init__(self, x, y, radius, color=Color.grey, border_width=1, batch=None):
+    def __init__(self, x: float, y: float, radius: float, color=Color.grey, border_width=1, batch=None):
         super().__init__(
             x=x, y=y,
             radius=radius,

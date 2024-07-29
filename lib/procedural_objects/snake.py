@@ -63,8 +63,20 @@ class ProceduralSnake:
     def update_vertices(self):
         
 
-        _right = [self.segments[0].front().x, self.segments[0].front().y]
-        _left = [self.segments[0].front().y, self.segments[0].front().x]
+        _right = [
+            self.segments[0].front().x, self.segments[0].front().y,
+            self.segments[0].get_point_on(math.radians(30)).x, self.segments[0].get_point_on(math.radians(30)).y,
+            self.segments[0].get_point_on(math.radians(30)).x, self.segments[0].get_point_on(math.radians(30)).y,
+            self.segments[0].get_point_on(math.radians(60)).x, self.segments[0].get_point_on(math.radians(60)).y,
+            self.segments[0].get_point_on(math.radians(60)).x, self.segments[0].get_point_on(math.radians(60)).y,
+            ]
+        _left = [
+            self.segments[0].front().y, self.segments[0].front().x,
+            self.segments[0].get_point_on(math.radians(-30)).y, self.segments[0].get_point_on(math.radians(-30)).x,
+            self.segments[0].get_point_on(math.radians(-30)).y, self.segments[0].get_point_on(math.radians(-30)).x,
+            self.segments[0].get_point_on(math.radians(-60)).y, self.segments[0].get_point_on(math.radians(-60)).x,
+            self.segments[0].get_point_on(math.radians(-60)).y, self.segments[0].get_point_on(math.radians(-60)).x,
+            ]
 
         for segm in self.segments:
             _right.append(segm.right.x)
@@ -77,8 +89,17 @@ class ProceduralSnake:
             _left.append(segm.left.y)
             _left.append(segm.left.x)
 
-        _right.extend([self.segments[-1].back().x, self.segments[-1].back().y])
-        _left.extend([self.segments[-1].back().y, self.segments[-1].back().x])
+        _right.extend([
+            self.segments[-1].get_point_on(math.radians(135)).x, self.segments[-1].get_point_on(math.radians(135)).y,
+            self.segments[-1].get_point_on(math.radians(135)).x, self.segments[-1].get_point_on(math.radians(135)).y,
+            self.segments[-1].back().x, self.segments[-1].back().y,
+            ])
+        
+        _left.extend([
+            self.segments[-1].get_point_on(math.radians(-135)).y, self.segments[-1].get_point_on(math.radians(-135)).x,
+            self.segments[-1].get_point_on(math.radians(-135)).y, self.segments[-1].get_point_on(math.radians(-135)).x,
+            self.segments[-1].back().y, self.segments[-1].back().x
+            ])
 
 
         self.fill_vertices = []

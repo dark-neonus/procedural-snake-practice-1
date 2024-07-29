@@ -59,15 +59,23 @@ blueprint.save(os.path.join("blueprints", "octopuses", "test-octopus.json"))
 # End test octopus blueprint
 """
 
+PROCEDURAL_RESIZING = 1
+
 blueprint = OctopusBlueprint()
-blueprint.load(os.path.join("blueprints", "octopuses", "regular-octopus.json"))
+
+if PROCEDURAL_RESIZING:
+    blueprint.load(os.path.join("blueprints", "octopuses", "regular-octopus-resizable.json"))
+else:
+    blueprint.load(os.path.join("blueprints", "octopuses", "regular-octopus.json"))
 
 octopus: Octopus = blueprint.create_octopus(
     batch=main_batch,
     debug_draw=False,
-    behavior=BEH_FOLLOW_MOUSE,
+    behavior=BEH_SWIM_ON_ITSELF,
     additional_tentacle_calculation_radius=30
     )
+
+
 
 
     
@@ -90,6 +98,10 @@ def on_draw():
 
 octopus.head.head().set_pos(screen_center)
 
+if PROCEDURAL_RESIZING:
+    segment_original_radiuses =[segment.radius for segment in octopus.head.segments]
+    segment_oriiginal_calculation_radiuses = [segment.calculation_radius for segment in octopus.head.segments]
+
 octopus_fill_color = octopus.head.fill_color
 
 tmp_head_pos = octopus.head.head().pos()
@@ -107,7 +119,7 @@ def update(dt):
     if delta_vector.mag < 15.0:
         delta_change = max(-10.0, min(0.0, delta_change - 0.1))
     else:
-        delta_change = min(5.0, max(0.0, int(delta_vector.mag) / 20))
+        delta_change = min(10.0, max(0.0, int(delta_vector.mag) / 40))
 
     color_change = max(0.0, min(100.0, color_change + delta_change))
 
@@ -120,6 +132,16 @@ def update(dt):
 
     octopus.set_fill_color(new_color)
     octopus.set_border_colro(new_color)
+
+    if PROCEDURAL_RESIZING:
+        deform_koef = min(delta_vector.mag, 25.0) / 25.0
+
+        for i in range(len(octopus.head.segments)):
+            octopus.head.segments[i].radius = segment_original_radiuses[i] * (1.0 - deform_koef * 0.1)
+            octopus.head.segments[i].calculation_radius = segment_oriiginal_calculation_radiuses[i] * (1.0 + deform_koef * 0.4)
+
+        octopus.head.segments[-1].radius = segment_original_radiuses[-1] * (1.0 - deform_koef * 0.4)
+
 
     octopus.update(dt, screen_center=screen_center, mouse_pos=mouse_pos)
       

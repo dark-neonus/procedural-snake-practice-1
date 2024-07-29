@@ -6,6 +6,7 @@ from pyglet.gl import *
 from lib.snake_behavior import *
 from lib.procedural_objects.snake import ProceduralSnake
 from lib.procedural_objects.circle import ProceduralCircle
+from lib.graphic.color import Color
 
 # ________________________________________________________________________________________________
 
@@ -59,17 +60,21 @@ if COBRA_DEFORM:
 snake = ProceduralSnake(
     segments=segments,
     batch=main_batch,
-    debug_draw=False
+    debug_draw=False,
+    fill_color=Color.magenta,
+    behavior=BEH_FOLLOW_MOUSE
 )
 snake1 = ProceduralSnake(
     segments=[ProceduralCircle(calculation_radius=r, radius=r) for r in range(30, 5, -2)],
     batch=main_batch,
-    debug_draw=False
+    debug_draw=False,
+    behavior=BEH_MOVE_ON_ITSELF
 )
 snake2 = ProceduralSnake(
     segments=[ProceduralCircle(calculation_radius=r, radius=r) for r in range(30, 5, -2)],
     batch=main_batch,
-    debug_draw=False
+    debug_draw=False,
+    behavior=BEH_SWIM_ON_ITSELF
 )
 snake.head().set_pos(screen_center)
 snake1.head().set_pos(screen_center)
@@ -95,12 +100,10 @@ def on_draw():
 
 
 def update(dt):
-    behaviours[BEH_FOLLOW_MOUSE].process(snake, dt, screen_center=screen_center, mouse_pos=mouse_pos)
-    behaviours[BEH_MOVE_ON_ITSELF].process(snake1, dt, screen_center=screen_center, mouse_pos=mouse_pos)
-    behaviours[BEH_MOVE_ON_ITSELF].process(snake2, dt, screen_center=screen_center, mouse_pos=mouse_pos)
-    snake.update(dt)
-    snake1.update(dt)
-    snake2.update(dt)
+    
+    snake.update(dt, screen_center=screen_center, mouse_pos=mouse_pos)
+    snake1.update(dt, screen_center=screen_center, mouse_pos=mouse_pos)
+    snake2.update(dt, screen_center=screen_center, mouse_pos=mouse_pos)
 
 
 
