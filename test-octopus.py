@@ -59,24 +59,30 @@ blueprint.save(os.path.join("blueprints", "octopuses", "test-octopus.json"))
 # End test octopus blueprint
 """
 
+########################
+#  >>>  Controls  <<<  #
+
 PROCEDURAL_RESIZING = 1
 RADICAL_MOVEMENT = 0
+SWIM_ON_ITSELF = 0
+DEBUG_DRAW = 0
+
+########################
+
+RADICAL_MOVEMENT = RADICAL_MOVEMENT and PROCEDURAL_RESIZING
 
 blueprint = OctopusBlueprint()
 
-if PROCEDURAL_RESIZING:
-    blueprint.load(os.path.join("blueprints", "octopuses", "regular-octopus-resizable.json"))
-else:
-    blueprint.load(os.path.join("blueprints", "octopuses", "regular-octopus.json"))
+blueprint.load(os.path.join("blueprints", "octopuses", "regular-octopus.json"))
 
 if RADICAL_MOVEMENT:
     blueprint.head_sizes[-1] *= 2.5
 
 octopus: Octopus = blueprint.create_octopus(
     batch=main_batch,
-    debug_draw=False,
-    behavior=BEH_SWIM_ON_ITSELF,
-    additional_tentacle_calculation_radius=30
+    debug_draw=DEBUG_DRAW,
+    behavior= BEH_SWIM_ON_ITSELF if SWIM_ON_ITSELF else BEH_FOLLOW_MOUSE,
+    additional_tentacle_calculation_radius=25
     )
 
 

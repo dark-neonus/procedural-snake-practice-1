@@ -1,0 +1,28 @@
+{
+	"head_sizes": [
+		110,
+		190
+	],
+	"tentacle_lengths": [
+		12,
+		20,
+		23,
+		22,
+		12
+	],
+	"tentacle_angles": [
+		-90,
+		-50,
+		0,
+		50,
+		90
+	],
+	"tentacle_start_size": 32,
+	"tentacle_size_reduction": 1.5,
+	"fill_color": [
+		0,
+		255,
+		255,
+		100
+	]
+}

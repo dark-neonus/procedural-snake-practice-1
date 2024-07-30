@@ -61,20 +61,22 @@ snake = ProceduralSnake(
     segments=segments,
     batch=main_batch,
     debug_draw=False,
-    fill_color=Color.magenta,
+    fill_color=Color.get_transparent_color(Color.magenta, 80),
     behavior=BEH_FOLLOW_MOUSE
 )
 snake1 = ProceduralSnake(
     segments=[ProceduralCircle(calculation_radius=r, radius=r) for r in range(30, 5, -2)],
     batch=main_batch,
     debug_draw=False,
-    behavior=BEH_MOVE_ON_ITSELF
+    behavior=BEH_MOVE_ON_ITSELF,
+    fill_color=Color.get_transparent_color(Color.magenta, 80),
 )
 snake2 = ProceduralSnake(
     segments=[ProceduralCircle(calculation_radius=r, radius=r) for r in range(30, 5, -2)],
     batch=main_batch,
     debug_draw=False,
-    behavior=BEH_SWIM_ON_ITSELF
+    behavior=BEH_SWIM_ON_ITSELF,
+    fill_color=Color.get_transparent_color(Color.magenta, 80),
 )
 snake.head().set_pos(screen_center)
 snake1.head().set_pos(screen_center)
